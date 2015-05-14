@@ -4,5 +4,6 @@ exports.topics = [{
 }];
 
 exports.commands = [
-  require('./commands/db/dump')
+  require('./commands/db/dump'),
+  require('./commands/db/restore')
 ];

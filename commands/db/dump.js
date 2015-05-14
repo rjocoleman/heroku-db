@@ -33,10 +33,11 @@ Example:
         break;
       default:
         h.error(`Sorry: '${databaseUrl.driver}' databases aren't supported yet.`);
+        process.exit(1);
     }
 
-    if (!shell.which(driver.binary)) {
-      h.error(`This database type requires: ${driver.binary} to be installed`);
+    if (!shell.which(driver.dumpBinary)) {
+      h.error(`This database type requires: ${driver.dumpBinary} to be installed`);
       process.exit(1);
     }
 
@@ -44,8 +45,18 @@ Example:
       yield h.confirmApp(exportName, context.flags.confirm, `Output file ${exportName} already exists.`);
     }
 
-    console.log(`Dumping ${exportName} from ${databaseUrl.host} with ${driver.binary}`);
-    shell.exec(driver.command(databaseUrl, exportName));
-    console.log(`Dumped: ${exportName}`)
+    console.log(`Dumping ${exportName} from ${databaseUrl.host} with ${driver.dumpBinary}`);
+
+    shell.exec(driver.dumpCommand(databaseUrl, exportName), function(code, output) {
+      console.log(output);
+      if (code !== 0) {
+        console.log('Dump failed');
+        process.exit(1);
+      } else {
+        console.log(`Dumped: ${exportName}`);
+      }
+    });
+
   })
+
 };
